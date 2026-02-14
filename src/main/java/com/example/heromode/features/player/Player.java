@@ -27,3 +27,5 @@ public class Player {
 
     // Lista de regalias/inventory pode vir depois
 }
+
+//Tive que remover o lombok de todo o projeto para ele funcionar =(
