@@ -78,9 +78,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <annotationProcessorPaths>
-
-                    </annotationProcessorPaths>
+                    <release>21</release>
                 </configuration>
             </plugin>
         </plugins>
