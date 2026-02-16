@@ -1,0 +1,32 @@
+services:
+  # O Banco de Dados
+  db:
+    image: mysql:8.0
+    container_name: heromode
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: heromode
+      MYSQL_DATABASE: heromode
+      MYSQL_USER: heromode
+      MYSQL_PASSWORD: heromode
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # O Painel Visual (phpMyAdmin)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: pma_container
+    restart: always
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
