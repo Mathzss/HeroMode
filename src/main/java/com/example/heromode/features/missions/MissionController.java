@@ -5,6 +5,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/missions")
+@CrossOrigin(origins = "*")
 public class MissionController {
 
     private final MissionService service;

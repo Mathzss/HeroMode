@@ -31,120 +31,55 @@ const categoryIcons = {
   Outros: <Zap size={20} />,
 };
 
-// Títulos de Conquistas com peso
 const achievements = [
   { lvl: 10, title: "O Desperto", subtitle: "Primeiros passos na maestria" },
-  {
-    lvl: 20,
-    title: "Guerreiro de Elite",
-    subtitle: "Constância inabalável provada",
-  },
-  {
-    lvl: 30,
-    title: "Mestre da Disciplina",
-    subtitle: "Sua vontade dobra a realidade",
-  },
+  { lvl: 20, title: "Guerreiro de Elite", subtitle: "Constância inabalável provada" },
+  { lvl: 30, title: "Mestre da Disciplina", subtitle: "Sua vontade dobra a realidade" },
   { lvl: 40, title: "Grão-Mestre", subtitle: "Referência em produtividade" },
   { lvl: 50, title: "Lenda Imortal", subtitle: "O ápice do potencial humano" },
 ];
 
 export default function App() {
-  const [player, setPlayer] = useState(null); // Inicia como null
+  const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showPenalty, setShowPenalty] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
 
-
-
+  // ✅ HOOK 1 - fetch inicial
   useEffect(() => {
-    async function fetchData(){
-        try{
-            const response = await api.get("/player");
-            if(response.data.length > 0){
-                const data = response.data[0];
-                setPlayer({
-                    ...data,
-                    tasks: data.tasks || [],
-                    inventory: data.invetory || []
-                });
-            } else{
-                const startPlayer = {name: "HEROO27", level: 1, xp: 0, streak: 0};
-                const res = await api.post("/player", startPlayer);
-                setPlayer({
-                    ...res.data,
-                    tasks: [],
-                    inventory: []
-                });
-            }
-        }catch (err){
-            console.error("Erro ao carregar dados do herói: ", err);
-        } finally{
-            setLoading(false);
+    async function fetchData() {
+      try {
+        const response = await api.get("/player");
+        if (response.data.length > 0) {
+          const data = response.data[0];
+          setPlayer({
+            ...data,
+            tasks: data.tasks || [],
+            inventory: data.inventory || [],
+          });
+        } else {
+          const startPlayer = { name: "HEROO27", level: 1, xp: 0, streak: 0 };
+          const res = await api.post("/player", startPlayer);
+          setPlayer({
+            ...res.data,
+            tasks: [],
+            inventory: [],
+          });
         }
+      } catch (err) {
+        console.error("Erro ao carregar dados do herói: ", err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
 
-
-  //ADICIONAR TASK NO BACK
-  const addTask = async (e) => {
-
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const newTask = {
-          title: formData.get("title"),
-          category: formData.get("category"),
-          difficulty: formData.get("difficulty"),
-      };
-
-      try{
-
-        const response = await api.post("/missions", newTask);
-        //Atualiza o estado local com a missão vinda do banco com o ID
-        setPlayer(prev => ({
-            ...prev,
-            tasks: [response.data, ...(prev.tasks || [])]
-
-        }));
-        e.target.reset();
-
-      } catch (err){
-        alert("Erro ao salvar missão no Banco!");
-
-      }
-
-  };
-
-    if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-cyan-500">CARREGANDO...</div>;
-    if(!player) return <div className="text-white">Erro ao carregar Herói.</div>;
-
-    const xpToNext = getXpNeeded(player.level);
-
-
-  // RESET DIÁRIO
- /* useEffect(() => {
-    const today = new Date().toDateString();
-    if (player.lastLogin !== today) {
-      if (player.tasks?.length > 0) {
-        setShowPenalty(true);
-        setPlayer((prev) => ({
-          ...prev,
-          xp: Math.max(0, prev.xp - prev.tasks.length * 50),
-          tasks: [],
-          streak: 0,
-          lastLogin: today,
-        }));
-        setTimeout(() => setShowPenalty(false), 4000);
-      } else {
-        setPlayer((prev) => ({ ...prev, lastLogin: today }));
-      }
-    }
-  }, [player.lastLogin, player.tasks]);*/
-
-  // LEVEL UP
+  // ✅ HOOK 2 - level up (sempre declarado, mas só executa quando player existe)
   useEffect(() => {
+    if (!player) return; // guard interno — não quebra a ordem dos hooks
+    const xpToNext = getXpNeeded(player.level);
     if (player.xp >= xpToNext) {
       setShowLevelUp(true);
       const perks = [
@@ -159,31 +94,46 @@ export default function App() {
         xp: prev.xp - xpToNext,
         inventory: [
           ...(prev.inventory || []),
-          {
-            id: Date.now(),
-            name: perks[Math.floor(Math.random() * perks.length)],
-          },
+          { id: Date.now(), name: perks[Math.floor(Math.random() * perks.length)] },
         ],
       }));
       setTimeout(() => setShowLevelUp(false), 3000);
     }
-  }, [player.xp, xpToNext]);
+  }, [player?.xp, player?.level]); // ✅ optional chaining para não quebrar quando player é null
 
- /* const addTask = (e) => {
+  // ─── Returns condicionais DEPOIS de todos os hooks ───────────────────────
+  if (loading)
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-cyan-500">
+        CARREGANDO...
+      </div>
+    );
+
+  if (!player)
+    return <div className="text-white">Erro ao carregar Herói.</div>;
+
+  // ─── Variáveis derivadas DEPOIS dos hooks e dos guards ────────────────────
+  const xpToNext = getXpNeeded(player.level);
+
+  const addTask = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const diff = formData.get("difficulty");
-    const xpValues = { Easy: 40, Medium: 100, Hard: 1000 };
     const newTask = {
-      id: Date.now(),
       title: formData.get("title"),
       category: formData.get("category"),
-      difficulty: diff,
-      xp: xpValues[diff],
+      difficulty: formData.get("difficulty"),
     };
-    setPlayer((prev) => ({ ...prev, tasks: [newTask, ...(prev.tasks || [])] }));
-    e.target.reset();
-  };*/
+    try {
+      const response = await api.post("/missions", newTask);
+      setPlayer((prev) => ({
+        ...prev,
+        tasks: [response.data, ...(prev.tasks || [])],
+      }));
+      e.target.reset();
+    } catch (err) {
+      alert("Erro ao salvar missão no Banco!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/20 via-black to-black text-zinc-100 p-4 md:p-10 font-sans">
@@ -195,11 +145,7 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center"
           >
-            <motion.div
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              className="text-center"
-            >
+            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="text-center">
               <Crown
                 size={100}
                 className="text-yellow-400 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(250,204,21,0.6)]"
@@ -216,12 +162,10 @@ export default function App() {
       </AnimatePresence>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* LADO ESQUERDO: STATUS E CONQUISTAS */}
+        {/* LADO ESQUERDO */}
         <aside className="lg:col-span-4 space-y-8">
-          {/* CARD DE PERFIL GLASS */}
           <section className="bg-zinc-900/40 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl" />
-
             <div className="flex items-center gap-6 mb-8">
               <div className="relative">
                 <div className="w-20 h-20 bg-gradient-to-tr from-cyan-500 to-indigo-600 rounded-3xl flex items-center justify-center text-3xl font-black italic shadow-[0_0_30px_rgba(6,182,212,0.3)]">
@@ -255,13 +199,11 @@ export default function App() {
                 </p>
               </div>
             </div>
-
             <div className="space-y-3">
               <div className="flex justify-between text-xs font-black uppercase italic">
                 <span className="text-cyan-400">Progresso</span>
                 <span className="text-zinc-500">
-                  {player.xp} <span className="text-white/20">/</span>{" "}
-                  {xpToNext} XP
+                  {player.xp} <span className="text-white/20">/</span> {xpToNext} XP
                 </span>
               </div>
               <div className="h-4 bg-black/50 rounded-full p-1 border border-white/5">
@@ -276,7 +218,6 @@ export default function App() {
             </div>
           </section>
 
-          {/* MURAL DE CONQUISTAS TITAN */}
           <section className="bg-zinc-900/20 backdrop-blur-sm p-8 rounded-[2.5rem] border border-white/5">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 text-white/40 flex items-center gap-3">
               <Trophy size={18} className="text-yellow-500" /> Mural das Lendas
@@ -294,9 +235,7 @@ export default function App() {
                   <div className="flex items-center gap-4">
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        player.level >= ach.lvl
-                          ? "bg-cyan-500 text-black"
-                          : "bg-white/5 text-zinc-500"
+                        player.level >= ach.lvl ? "bg-cyan-500 text-black" : "bg-white/5 text-zinc-500"
                       }`}
                     >
                       {player.level >= ach.lvl ? (
@@ -308,9 +247,7 @@ export default function App() {
                     <div>
                       <h4
                         className={`text-sm font-black uppercase italic ${
-                          player.level >= ach.lvl
-                            ? "text-white"
-                            : "text-zinc-500"
+                          player.level >= ach.lvl ? "text-white" : "text-zinc-500"
                         }`}
                       >
                         {ach.title}
@@ -326,21 +263,16 @@ export default function App() {
           </section>
         </aside>
 
-        {/* LADO DIREITO: QUESTS E INVENTARIO */}
+        {/* LADO DIREITO */}
         <main className="lg:col-span-8 space-y-8">
-          {/* FORMULÁRIO DE ENTRADA ÉPICO */}
           <section className="bg-zinc-900/30 backdrop-blur-md p-2 rounded-[2rem] border border-white/10">
-            <form
-              onSubmit={addTask}
-              className="grid grid-cols-1 md:grid-cols-6 gap-2"
-            >
+            <form onSubmit={addTask} className="grid grid-cols-1 md:grid-cols-6 gap-2">
               <input
                 name="title"
                 required
                 placeholder="Qual sua próxima conquista?"
                 className="md:col-span-3 bg-black/40 border border-white/5 p-5 rounded-2xl outline-none focus:border-cyan-500/50 transition-all text-sm font-medium"
               />
-
               <select
                 name="category"
                 className="bg-black/40 border border-white/5 px-4 rounded-2xl text-[10px] font-black uppercase outline-none cursor-pointer"
@@ -351,7 +283,6 @@ export default function App() {
                   </option>
                 ))}
               </select>
-
               <select
                 name="difficulty"
                 className="bg-black/40 border border-white/5 px-4 rounded-2xl text-[10px] font-black uppercase outline-none cursor-pointer"
@@ -360,7 +291,6 @@ export default function App() {
                 <option value="Medium">Médio</option>
                 <option value="Hard">Difícil</option>
               </select>
-
               <button
                 type="submit"
                 className="bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase text-xs rounded-2xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)]"
@@ -370,7 +300,6 @@ export default function App() {
             </form>
           </section>
 
-          {/* LISTA DE QUESTS */}
           <div className="space-y-4">
             <div className="flex justify-between items-center px-4">
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white/30 flex items-center gap-3">
@@ -380,7 +309,6 @@ export default function App() {
                 <Flame size={14} /> Streak: {player.streak} Dias
               </div>
             </div>
-
             <AnimatePresence mode="popLayout">
               {player.tasks?.map((task) => (
                 <motion.div
@@ -396,9 +324,7 @@ export default function App() {
                       {categoryIcons[task.category]}
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold tracking-tight text-white/90">
-                        {task.title}
-                      </h4>
+                      <h4 className="text-lg font-bold tracking-tight text-white/90">{task.title}</h4>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
                           {task.category}
@@ -438,7 +364,6 @@ export default function App() {
             </AnimatePresence>
           </div>
 
-          {/* REGALIAS REFORMULADAS */}
           <section className="bg-zinc-900/20 p-8 rounded-[2.5rem] border border-white/5">
             <h3 className="text-xs font-black uppercase tracking-widest mb-6 text-pink-500 flex items-center gap-3">
               <Gift size={18} /> Baú de Recompensas
