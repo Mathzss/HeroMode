@@ -1,10 +1,9 @@
-package com.example.heromode.features.player;
+package com.example.heromode.features.progression;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*; // Importa Entity e Table
 
-
+@Entity
+@Table(name = "players")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +14,12 @@ public class Player {
     private Long xp = 0L;
     private Integer streak = 0;
 
+    // Construtor vazio obrigatorio para o JPA
+    public Player() {}
+
+    // Getters e Setters que você já fez...
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

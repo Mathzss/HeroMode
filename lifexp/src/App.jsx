@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "./services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
@@ -48,33 +49,82 @@ const achievements = [
 ];
 
 export default function App() {
-  const [player, setPlayer] = useState(() => {
-    const saved = localStorage.getItem("lifexp_player");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          name: "Mathzss",
-          level: 1,
-          xp: 0,
-          streak: 0,
-          tasks: [],
-          inventory: [],
-          lastLogin: new Date().toDateString(),
-        };
-  });
+  const [player, setPlayer] = useState(null); // Inicia como null
+  const [loading, setLoading] = useState(true);
 
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showPenalty, setShowPenalty] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
 
-  const xpToNext = getXpNeeded(player.level);
+
 
   useEffect(() => {
-    localStorage.setItem("lifexp_player", JSON.stringify(player));
-  }, [player]);
+    async function fetchData(){
+        try{
+            const response = await api.get("/player");
+            if(response.data.length > 0){
+                const data = response.data[0];
+                setPlayer({
+                    ...data,
+                    tasks: data.tasks || [],
+                    inventory: data.invetory || []
+                });
+            } else{
+                const startPlayer = {name: "HEROO27", level: 1, xp: 0, streak: 0};
+                const res = await api.post("/player", startPlayer);
+                setPlayer({
+                    ...res.data,
+                    tasks: [],
+                    inventory: []
+                });
+            }
+        }catch (err){
+            console.error("Erro ao carregar dados do herói: ", err);
+        } finally{
+            setLoading(false);
+        }
+    }
+    fetchData();
+  }, []);
+
+
+  //ADICIONAR TASK NO BACK
+  const addTask = async (e) => {
+
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const newTask = {
+          title: formData.get("title"),
+          category: formData.get("category"),
+          difficulty: formData.get("difficulty"),
+      };
+
+      try{
+
+        const response = await api.post("/missions", newTask);
+        //Atualiza o estado local com a missão vinda do banco com o ID
+        setPlayer(prev => ({
+            ...prev,
+            tasks: [response.data, ...(prev.tasks || [])]
+
+        }));
+        e.target.reset();
+
+      } catch (err){
+        alert("Erro ao salvar missão no Banco!");
+
+      }
+
+  };
+
+    if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-cyan-500">CARREGANDO...</div>;
+    if(!player) return <div className="text-white">Erro ao carregar Herói.</div>;
+
+    const xpToNext = getXpNeeded(player.level);
+
 
   // RESET DIÁRIO
-  useEffect(() => {
+ /* useEffect(() => {
     const today = new Date().toDateString();
     if (player.lastLogin !== today) {
       if (player.tasks?.length > 0) {
@@ -91,7 +141,7 @@ export default function App() {
         setPlayer((prev) => ({ ...prev, lastLogin: today }));
       }
     }
-  }, [player.lastLogin, player.tasks]);
+  }, [player.lastLogin, player.tasks]);*/
 
   // LEVEL UP
   useEffect(() => {
@@ -119,7 +169,7 @@ export default function App() {
     }
   }, [player.xp, xpToNext]);
 
-  const addTask = (e) => {
+ /* const addTask = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const diff = formData.get("difficulty");
@@ -133,7 +183,7 @@ export default function App() {
     };
     setPlayer((prev) => ({ ...prev, tasks: [newTask, ...(prev.tasks || [])] }));
     e.target.reset();
-  };
+  };*/
 
   return (
     <div className="min-h-screen bg-[#050505] bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/20 via-black to-black text-zinc-100 p-4 md:p-10 font-sans">

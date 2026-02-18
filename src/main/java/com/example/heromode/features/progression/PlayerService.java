@@ -1,4 +1,4 @@
-package com.example.heromode.features.player;
+package com.example.heromode.features.progression;
 
 import org.springframework.stereotype.Service;
 
