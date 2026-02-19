@@ -101,6 +101,41 @@ export default function App() {
     }
   }, [player?.xp, player?.level]); // ✅ optional chaining para não quebrar quando player é null
 
+  const completeTask = async (task) => {
+      const xpValues = { Easy: 40, Medium: 100, Hard: 1000 };
+      const gained = xpValues[task.difficulty] || 0;
+
+      const updatedPlayer = {
+        ...player,
+        xp: player.xp + gained,
+        streak: player.streak + 1,
+      };
+
+      // Checa level up antes de salvar
+      const xpToNext = getXpNeeded(updatedPlayer.level);
+      if (updatedPlayer.xp >= xpToNext) {
+        updatedPlayer.level = updatedPlayer.level + 1;
+        updatedPlayer.xp = updatedPlayer.xp - xpToNext;
+      }
+
+      try {
+        // 1. Remove a missão do banco
+        await api.delete(`/missions/${task.id}`);
+        // 2. Salva XP e level atualizados no banco
+        await api.put(`/player/${player.id}`, updatedPlayer);
+
+        // 3. Atualiza o estado local
+        setPlayer((prev) => ({
+          ...prev,
+          ...updatedPlayer,
+          tasks: prev.tasks.filter((t) => t.id !== task.id),
+        }));
+      } catch (err) {
+        alert("Erro ao completar missão!");
+        console.error(err);
+      }
+    };
+
   // ─── Returns condicionais DEPOIS de todos os hooks ───────────────────────
   if (loading)
     return (
@@ -347,14 +382,7 @@ export default function App() {
                     </div>
                   </div>
                   <button
-                    onClick={() =>
-                      setPlayer((prev) => ({
-                        ...prev,
-                        xp: prev.xp + task.xp,
-                        tasks: prev.tasks.filter((t) => t.id !== task.id),
-                        streak: prev.streak + 1,
-                      }))
-                    }
+                    onClick={() => completeTask(task)}
                     className="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-lg"
                   >
                     <ShieldCheck size={28} />

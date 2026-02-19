@@ -5,7 +5,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/missions")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class MissionController {
 
     private final MissionService service;
@@ -22,5 +22,10 @@ public class MissionController {
     @GetMapping
     public List<Mission> list() {
         return service.listAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void complete(@PathVariable Long id) {
+        service.deleteMission(id);
     }
 }

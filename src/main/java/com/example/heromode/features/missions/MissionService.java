@@ -18,11 +18,12 @@ public class MissionService {
         mission.setCategory(request.category());
         mission.setDifficulty(request.difficulty());
 
-        // Mantendo a lógica de XP que vimos no App.jsx
+        // Calcula XP baseado na dificuldade
         int xp = switch (request.difficulty()) {
-            case "Hard" -> 1000;
+            case "Easy"   -> 40;
             case "Medium" -> 100;
-            default -> 40;
+            case "Hard"   -> 1000;
+            default       -> 0;
         };
         mission.setXpValue(xp);
 
@@ -31,5 +32,9 @@ public class MissionService {
 
     public List<Mission> listAll() {
         return repository.findAll();
+    }
+
+    public void deleteMission(Long id) {
+        repository.deleteById(id);
     }
 }

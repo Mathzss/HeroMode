@@ -5,17 +5,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlayerService {
 
-    public long getXpNeeded(int level) {
-        return (long) (100 * Math.pow(level, 1.5));
+    private final PlayerRepository repository;
+
+    public PlayerService(PlayerRepository repository) {
+        this.repository = repository;
     }
 
-    public void addXp(Player player, int amount) {
-        player.setXp(player.getXp() + amount);
-
-        while (player.getXp() >= getXpNeeded(player.getLevel())) {
-            player.setXp(player.getXp() - getXpNeeded(player.getLevel()));
-            player.setLevel(player.getLevel() + 1);
-            // Aqui você pode disparar a lógica de ganhar um item aleatório
-        }
+    public Player updatePlayer(Long id, Player updated) {
+        Player player = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Player não encontrado"));
+        player.setXp(updated.getXp());
+        player.setLevel(updated.getLevel());
+        player.setStreak(updated.getStreak());
+        player.setName(updated.getName());
+        return repository.save(player);
     }
 }

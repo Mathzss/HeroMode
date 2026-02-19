@@ -5,13 +5,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/player")
-@CrossOrigin(origins = "*") // Para o Victor nao ter erro de CORS no React
+//@CrossOrigin(origins = "*")
 public class PlayerController {
 
     private final PlayerRepository repository;
+    private final PlayerService service;
 
-    public PlayerController(PlayerRepository repository) {
+    public PlayerController(PlayerRepository repository, PlayerService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     @GetMapping
@@ -22,5 +24,11 @@ public class PlayerController {
     @PostMapping
     public Player createPlayer(@RequestBody Player player) {
         return repository.save(player);
+    }
+
+
+    @PutMapping("/{id}")
+    public Player updatePlayer(@PathVariable Long id, @RequestBody Player player) {
+        return service.updatePlayer(id, player);
     }
 }
