@@ -17,8 +17,11 @@ public class PlayerController {
     }
 
     @GetMapping
-    public List<Player> getPlayers() {
-        return repository.findAll();
+    public List<PlayerLoginResponse> getPlayers() {
+        return repository.findAll()
+                .stream()
+                .map(p -> playerService.login(p.getId()))
+                .toList();
     }
 
     @PostMapping

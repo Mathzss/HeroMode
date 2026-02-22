@@ -1,5 +1,6 @@
 package com.example.heromode.features.missions;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -27,5 +28,11 @@ public class MissionController {
     @DeleteMapping("/{id}")
     public void complete(@PathVariable Long id) {
         service.deleteMission(id);
+    }
+
+    @PatchMapping("/{logId}/complete")
+    public ResponseEntity<Integer> complete(@PathVariable Long logId){
+        int xpGained = service.completeLog(logId);
+        return ResponseEntity.ok(xpGained);
     }
 }
