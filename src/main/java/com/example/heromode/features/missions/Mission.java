@@ -1,5 +1,6 @@
 package com.example.heromode.features.missions;
 
+import com.example.heromode.features.progression.Player;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,10 +9,15 @@ public class Mission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
     private String category;
     private String difficulty;
     private Integer xpValue;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id")
+    private Player player;
 
     // Construtor Vazio (Obrigatório para o JPA)
     public Mission() {}
