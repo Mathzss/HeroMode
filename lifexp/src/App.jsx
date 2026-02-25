@@ -52,11 +52,13 @@ export default function App() {
       try {
         const response = await api.get("/player");
         if (response.data.length > 0) {
-          const data = response.data[0];
+          const loginResponse = response.data[0];
+          const data = loginResponse.player;
           setPlayer({
             ...data,
-            tasks: data.tasks || [],
+            tasks: loginResponse.todayMissions || [],
             inventory: data.inventory || [],
+            penalized: loginResponse.penalized,
           });
         } else {
           const startPlayer = { name: "HEROO27", level: 1, xp: 0, streak: 0 };
@@ -102,37 +104,36 @@ export default function App() {
   }, [player?.xp, player?.level]); // ✅ optional chaining para não quebrar quando player é null
 
   const completeTask = async (task) => {
-      const xpValues = { Easy: 40, Medium: 100, Hard: 1000 };
-      const gained = xpValues[task.difficulty] || 0;
+      try{
 
-      const updatedPlayer = {
-        ...player,
-        xp: player.xp + gained,
-        streak: player.streak + 1,
-      };
+        const res = await api.patch('/missions/${task.id}/complete');
+        const xpGained = res.data;
 
-      // Checa level up antes de salvar
-      const xpToNext = getXpNeeded(updatedPlayer.level);
-      if (updatedPlayer.xp >= xpToNext) {
-        updatedPlayer.level = updatedPlayer.level + 1;
-        updatedPlayer.xp = updatedPlayer.xp - xpToNext;
-      }
+        const updatedPlayer = {
 
-      try {
-        // 1. Remove a missão do banco
-        await api.delete(`/missions/${task.id}`);
-        // 2. Salva XP e level atualizados no banco
-        await api.put(`/player/${player.id}`, updatedPlayer);
+            ...player,
+            xp: player.xp + xpGained,
+            streak: player.streak + 1,
 
-        // 3. Atualiza o estado local
+        };
+
+        const xpToNext = getXpNeeded(updatedPlayer.level);
+        if (updatedPlayer.xp >= xpToNext){
+            updatedPlayer.level = updatedPlayer.level + 1;
+            updatedPlayer.xp = updatedPlayer.xp - xpToNext;
+        }
+
+        await api.put('/player/${player.id}', updatedPlayer);
+
         setPlayer((prev) => ({
-          ...prev,
-          ...updatedPlayer,
-          tasks: prev.tasks.filter((t) => t.id !== task.id),
+            ...prev,
+            ...updatedPlayer,
+            tasks: prev.tasks.filter((t) => t.id !== task.id),
         }));
-      } catch (err) {
-        alert("Erro ao completar missão!");
-        console.error(err);
+
+      } catch (err){
+            alert("Erro ao completar missão!");
+            console.error(err);
       }
     };
 
@@ -154,6 +155,7 @@ export default function App() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newTask = {
+      playerId: player.id,
       title: formData.get("title"),
       category: formData.get("category"),
       difficulty: formData.get("difficulty"),
