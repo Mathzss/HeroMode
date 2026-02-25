@@ -37,4 +37,7 @@ public class Mission {
 
     public Integer getXpValue() { return xpValue; }
     public void setXpValue(Integer xpValue) { this.xpValue = xpValue; }
+
+    public Player getPlayer() { return player; }
+    public void setPlayer(Player player) { this.player = player; }
 }

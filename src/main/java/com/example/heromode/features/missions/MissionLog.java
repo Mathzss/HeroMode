@@ -32,8 +32,14 @@ public class MissionLog {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    private LocalDate getDate() { return date;}
-    private void setDate(LocalDate date) { this.date = date; }
+    public  Mission getMission() { return mission; }
+    public void setMission(Mission mission) { this.mission = mission; }
+
+    public Player getPlayer() { return player; }
+    public void setPlayer(Player player) { this.player = player; }
+
+    public LocalDate getDate() { return date;}
+    public void setDate(LocalDate date) { this.date = date; }
 
     public Boolean getCompleted() { return completed; }
     public void setCompleted(Boolean completed) { this.completed = completed; }

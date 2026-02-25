@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MissionLogReporsitory extends JpaRepository<MissionLog, Long> {
 
-    List<MissionLog> findByPlayerIdAndDate(Long playerId, Date date);
+    List<MissionLog> findByPlayerIdAndDate(Long playerId, LocalDate date);
     List<MissionLog> findByPlayerIdAndDateAndCompleted(
             Long playerId, LocalDate date, Boolean completed);
 

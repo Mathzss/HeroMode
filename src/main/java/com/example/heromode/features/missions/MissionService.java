@@ -43,7 +43,7 @@ public class MissionService {
         };
         mission.setXpValue(xp);
 
-        Mission saved = missionRepository.save(mission);
+        Mission saved = repository.save(mission);
 
         //Já cria o log de hoje para a missão.
         createLogForToday(saved, player);
@@ -54,7 +54,7 @@ public class MissionService {
     //Gera logs do dia para todas as missões do player
     public void generateDailyLogs(Player player) {
         LocalDate today = LocalDate.now();
-        List<Mission> missions = missionRepository.findByPlayerId(player.getId());
+        List<Mission> missions = repository.findByPlayerId(player.getId());
 
         for (Mission mission : missions){
             boolean logJaExiste = logReporsitory
@@ -114,6 +114,14 @@ public class MissionService {
             }
         }
         return false;
+    }
+
+    public List<Mission> listAll(){
+        return repository.findAll();
+    }
+
+    public void deleteMission(Long id){
+        repository.deleteById(id);
     }
 
 }

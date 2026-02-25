@@ -20,7 +20,7 @@ public class PlayerController {
     public List<PlayerLoginResponse> getPlayers() {
         return repository.findAll()
                 .stream()
-                .map(p -> playerService.login(p.getId()))
+                .map(p -> service.login(p.getId()))
                 .toList();
     }
 
