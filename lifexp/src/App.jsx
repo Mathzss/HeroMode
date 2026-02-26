@@ -104,14 +104,19 @@ export default function App() {
   }, [player?.xp, player?.level]); // ✅ optional chaining para não quebrar quando player é null
 
   const completeTask = async (task) => {
+        console.log("player.id:", player.id);
+        console.log("task.id:", task.id);
+
       try{
 
-        const res = await api.patch('/missions/${task.id}/complete');
+        const res = await api.patch(`/missions/${task.id}/complete`);
         const xpGained = res.data;
 
         const updatedPlayer = {
 
-            ...player,
+            id: player.id,
+            name: player.name,
+            level: player.level,
             xp: player.xp + xpGained,
             streak: player.streak + 1,
 
@@ -123,7 +128,7 @@ export default function App() {
             updatedPlayer.xp = updatedPlayer.xp - xpToNext;
         }
 
-        await api.put('/player/${player.id}', updatedPlayer);
+        await api.put(`/player/${player.id}`, updatedPlayer);
 
         setPlayer((prev) => ({
             ...prev,
@@ -161,10 +166,12 @@ export default function App() {
       difficulty: formData.get("difficulty"),
     };
     try {
-      const response = await api.post("/missions", newTask);
+      await api.post("/missions", newTask);
+      const response = await api.get("/player");
+      const loginResponse = response.data[0];
       setPlayer((prev) => ({
         ...prev,
-        tasks: [response.data, ...(prev.tasks || [])],
+        tasks: loginResponse.todayMissions || [],
       }));
       e.target.reset();
     } catch (err) {
@@ -358,27 +365,27 @@ export default function App() {
                 >
                   <div className="flex items-center gap-6">
                     <div className="w-14 h-14 bg-black/60 rounded-2xl flex items-center justify-center text-cyan-400 border border-white/5 group-hover:border-cyan-500/50 transition-colors">
-                      {categoryIcons[task.category]}
+                      {categoryIcons[task.mission.category]}
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold tracking-tight text-white/90">{task.title}</h4>
+                      <h4 className="text-lg font-bold tracking-tight text-white/90">{task.mission.title}</h4>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                          {task.category}
+                          {task.mission.category}
                         </span>
                         <span
                           className={`text-[9px] font-black px-3 py-0.5 rounded-full ${
-                            task.difficulty === "Hard"
+                            task.mission.difficulty === "Hard"
                               ? "bg-red-500/20 text-red-500"
-                              : task.difficulty === "Medium"
+                              : task.mission.difficulty === "Medium"
                               ? "bg-yellow-500/20 text-yellow-500"
                               : "bg-green-500/20 text-green-500"
                           }`}
                         >
-                          {task.difficulty}
+                          {task.mission.difficulty}
                         </span>
                         <span className="text-[10px] font-black text-cyan-400 italic">
-                          +{task.xp} XP
+                          +{task.mission.xpValue} XP
                         </span>
                       </div>
                     </div>
