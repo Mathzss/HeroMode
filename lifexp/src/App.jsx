@@ -112,6 +112,25 @@ export default function App() {
         const res = await api.patch(`/missions/${task.id}/complete`);
         const xpGained = res.data;
 
+        let newXp = player.xp + xpGained;
+        let newLevel = player.level;
+        let newStreak = player.streak + 1;
+        const perks = ["Passe Livre 🍔", "Meditação 🧘", "Noite Gamer 🎮", "Cafeína Épica ☕"];
+        let new Inventory = [...(player.inventory || [])];
+        let leveledUp = false;
+
+        const getXpNeeded = getXpNeeded(newLevel);
+        if (newXp >= xpNeeded){
+            newLevel = newLevel + 1;
+            newXp = newXp - xpNeeded;
+            newInventory = [...newInventory, {
+                id: Date.now(),
+                name: perks[Math.floor(Math.random() * perks.length)]
+            }];
+            leveledUp = true;
+
+        }
+
         const updatedPlayer = {
 
             id: player.id,

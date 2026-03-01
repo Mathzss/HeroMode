@@ -79,7 +79,8 @@ public class MissionService {
 
     //Busca logs de hoje do player
     public List<MissionLog> getTodayLogs(Long playerId) {
-        return logReporsitory.findByPlayerIdAndDate(playerId, LocalDate.now());
+        return logReporsitory.findByPlayerIdAndDateAndCompleted(
+                playerId, LocalDate.now(), false);
     }
 
     public int completeLog(Long logId){
