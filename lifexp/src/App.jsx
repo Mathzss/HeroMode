@@ -116,10 +116,10 @@ export default function App() {
         let newLevel = player.level;
         let newStreak = player.streak + 1;
         const perks = ["Passe Livre 🍔", "Meditação 🧘", "Noite Gamer 🎮", "Cafeína Épica ☕"];
-        let new Inventory = [...(player.inventory || [])];
+        let newInventory = [...(player.inventory || [])];
         let leveledUp = false;
 
-        const getXpNeeded = getXpNeeded(newLevel);
+        const xpNeeded = getXpNeeded(newLevel);
         if (newXp >= xpNeeded){
             newLevel = newLevel + 1;
             newXp = newXp - xpNeeded;
