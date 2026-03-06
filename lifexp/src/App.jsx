@@ -103,63 +103,63 @@ export default function App() {
     }
   }, [player?.xp, player?.level]); // ✅ optional chaining para não quebrar quando player é null
 
-  const completeTask = async (task) => {
-        console.log("player.id:", player.id);
-        console.log("task.id:", task.id);
+ const completeTask = async (task) => {
+   try {
+     const res = await api.patch(`/missions/${task.id}/complete`);
+     const xpGained = res.data;
 
-      try{
+     const perks = ["Passe Livre 🍔", "Meditação 🧘", "Noite Gamer 🎮", "Cafeína Épica ☕"];
+     let newXp = player.xp + xpGained;
+     let newLevel = player.level;
+     let newStreak = player.streak + 1;
+     let newInventory = [...(player.inventory || [])];
+     let leveledUp = false;
 
-        const res = await api.patch(`/missions/${task.id}/complete`);
-        const xpGained = res.data;
+     const xpNeeded = getXpNeeded(newLevel);
+     if (newXp >= xpNeeded) {
+       newLevel = newLevel + 1;
+       newXp = newXp - xpNeeded;
+       newInventory = [...newInventory, {
+         id: Date.now(),
+         name: perks[Math.floor(Math.random() * perks.length)]
+       }];
+       leveledUp = true;
+     }
 
-        let newXp = player.xp + xpGained;
-        let newLevel = player.level;
-        let newStreak = player.streak + 1;
-        const perks = ["Passe Livre 🍔", "Meditação 🧘", "Noite Gamer 🎮", "Cafeína Épica ☕"];
-        let newInventory = [...(player.inventory || [])];
-        let leveledUp = false;
+     // Salva no banco só os campos que o Player.java conhece
+     await api.put(`/player/${player.id}`, {
+       id: player.id,
+       name: player.name,
+       level: newLevel,
+       xp: newXp,
+       streak: newStreak,
+     });
 
-        const xpNeeded = getXpNeeded(newLevel);
-        if (newXp >= xpNeeded){
-            newLevel = newLevel + 1;
-            newXp = newXp - xpNeeded;
-            newInventory = [...newInventory, {
-                id: Date.now(),
-                name: perks[Math.floor(Math.random() * perks.length)]
-            }];
-            leveledUp = true;
+     // Recarrega missões do banco
+     const response = await api.get("/player");
+     const loginResponse = response.data[0];
 
-        }
+     setPlayer((prev) => ({
+       ...prev,
+       xp: newXp,
+       level: newLevel,
+       streak: newStreak,
+       inventory: newInventory,
+       tasks: loginResponse.todayMissions?.filter(t => !t.completed) || [],
+     }));
 
-        const updatedPlayer = {
+     if (leveledUp) {
+       setTimeout(() => {
+         setShowLevelUp(true);
+         setTimeout(() => setShowLevelUp(false), 3000);
+       }, 100);
+     }
 
-            id: player.id,
-            name: player.name,
-            level: player.level,
-            xp: player.xp + xpGained,
-            streak: player.streak + 1,
-
-        };
-
-        const xpToNext = getXpNeeded(updatedPlayer.level);
-        if (updatedPlayer.xp >= xpToNext){
-            updatedPlayer.level = updatedPlayer.level + 1;
-            updatedPlayer.xp = updatedPlayer.xp - xpToNext;
-        }
-
-        await api.put(`/player/${player.id}`, updatedPlayer);
-
-        setPlayer((prev) => ({
-            ...prev,
-            ...updatedPlayer,
-            tasks: prev.tasks.filter((t) => t.id !== task.id),
-        }));
-
-      } catch (err){
-            alert("Erro ao completar missão!");
-            console.error(err);
-      }
-    };
+   } catch (err) {
+     alert("Erro ao completar missão!");
+     console.error(err);
+   }
+ };
 
   // ─── Returns condicionais DEPOIS de todos os hooks ───────────────────────
   if (loading)
