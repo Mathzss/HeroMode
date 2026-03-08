@@ -16,6 +16,7 @@ public class Player {
     private Long xp = 0L;
     private Integer streak = 0;
     private LocalDate lastLogin;
+    private Long userId;
 
     // Construtor vazio obrigatorio para o JPA
     public Player() {}
@@ -38,6 +39,9 @@ public class Player {
 
     public LocalDate getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDate lastLogin) { this.lastLogin = lastLogin; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     // Lista de regalias/inventory pode vir depois
 }
