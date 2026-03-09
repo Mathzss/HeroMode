@@ -14,23 +14,24 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-public class JwtAuthFilter {
+public class JwtAuthFilter extends OncePerRequestFilter{
 
     private final JwtService jwtService;
 
     public JwtAuthFilter(JwtService jwtService) {
+
         this.jwtService = jwtService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServLetRequest request,
+    protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
                 throws ServletException, IOException{
 
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
