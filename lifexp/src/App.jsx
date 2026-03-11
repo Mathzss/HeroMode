@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "./services/api";
+import Login from './pages/Login';
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
@@ -40,6 +41,8 @@ const achievements = [
 ];
 
 export default function App() {
+
+  const [loggedIn, setLoggedIn] = useState(false);
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -168,6 +171,8 @@ export default function App() {
         CARREGANDO...
       </div>
     );
+
+if (!loggedIn) return <Login onLogin={() => setLoggedIn(true)} />;
 
   if (!player)
     return <div className="text-white">Erro ao carregar Herói.</div>;
