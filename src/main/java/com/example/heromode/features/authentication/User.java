@@ -12,6 +12,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    private String name;
+
+    private String birthdate;
+
     @Column(nullable = false)
     private String password;
 
@@ -27,5 +31,9 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getBirthdate() { return birthdate; }
+    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
 }

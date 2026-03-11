@@ -33,10 +33,12 @@ public class AuthService {
         User user = new User();
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
+        user.setName(request.name());
+        user.setBirthdate(request.birthdate());
         User saved = userRepository.save(user);
 
         Player player = new Player();
-        player.setName("Herói");
+        player.setName(saved.getName() != null ? saved.getName(): "Herói");
         player.setUserId(saved.getId());
         playerRepository.save(player);
 

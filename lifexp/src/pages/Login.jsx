@@ -235,7 +235,32 @@ export default function Login({ onLogin }) {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setLoading(true);
-    setTimeout(() => { setLoading(false); if (onLogin) onLogin(); }, 1800);
+
+    try{
+        const endpoint = mode === "register" ? "/auth/register" : "/auth/login";
+        const body = mode === "register"
+            ? {name: fields.name, birthdate: fields.birthdate, email: fields.email, password: fields.password}
+            : {email: fields.email, password: fields.password};
+
+        const res = await fetch(`http://localhost:8080${endpoint}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body),
+        });
+
+        if(!res.ok) throw new Error ("Credenciais Inválidas");
+
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.userId);
+        if(onLogin) onLogin(data.userId);
+
+    } catch (err){
+        setErrors({email: err.message || "Erro ao autenticar"});
+    } finally {
+        setLoading(false);
+    }
+
   };
 
   const switchMode = (m) => {
