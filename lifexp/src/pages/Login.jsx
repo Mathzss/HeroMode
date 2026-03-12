@@ -230,7 +230,7 @@ export default function Login({ onLogin }) {
     return e;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }

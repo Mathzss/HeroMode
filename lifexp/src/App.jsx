@@ -40,7 +40,7 @@ const achievements = [
   { lvl: 50, title: "Lenda Imortal", subtitle: "O ápice do potencial humano" },
 ];
 
-export default function App() {
+export default function App({userId, onLogout}) {
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [player, setPlayer] = useState(null);
@@ -54,24 +54,31 @@ export default function App() {
     async function fetchData() {
       try {
         const response = await api.get("/player");
-        if (response.data.length > 0) {
-          const loginResponse = response.data[0];
-          const data = loginResponse.player;
-          setPlayer({
-            ...data,
-            tasks: loginResponse.todayMissions || [],
-            inventory: data.inventory || [],
-            penalized: loginResponse.penalized,
-          });
+
+        const loginResponse = response.data.find(
+            (r) => r.player.userId === userId
+        );
+
+        if (loginResponse){
+            const data = loginResponse.player;
+            setPlayer({
+                ...data,
+                tasks: loginResponse.todayMissions || [],
+                inventory: data.inventory || [],
+                penalized: loginResponse.penalized,
+            });
         } else {
-          const startPlayer = { name: "HEROO27", level: 1, xp: 0, streak: 0 };
-          const res = await api.post("/player", startPlayer);
-          setPlayer({
-            ...res.data,
-            tasks: [],
-            inventory: [],
-          });
+            const res = await api.post("/player",{
+                name: "Herói",
+                userId: userId,
+            });
+            setPlayer({
+                ...res.data,
+                tasks: [],
+                inventory: [],
+            });
         }
+
       } catch (err) {
         console.error("Erro ao carregar dados do herói: ", err);
       } finally {
@@ -79,7 +86,7 @@ export default function App() {
       }
     }
     fetchData();
-  }, []);
+  }, [userId]);
 
   // ✅ HOOK 2 - level up (sempre declarado, mas só executa quando player existe)
   useEffect(() => {
@@ -267,6 +274,12 @@ if (!loggedIn) return <Login onLogin={() => setLoggedIn(true)} />;
                 </p>
               </div>
             </div>
+            <button
+              onClick={onLogout}
+              className="text-[10px] font-black uppercase text-zinc-600 hover:text-red-400 transition-colors tracking-widest"
+            >
+              Sair
+            </button>
             <div className="space-y-3">
               <div className="flex justify-between text-xs font-black uppercase italic">
                 <span className="text-cyan-400">Progresso</span>
