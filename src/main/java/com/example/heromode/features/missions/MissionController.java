@@ -1,6 +1,9 @@
 package com.example.heromode.features.missions;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,8 +24,13 @@ public class MissionController {
     }
 
     @GetMapping
-    public List<Mission> list() {
-        return service.listAll();
+    public List<MissionLog> listToday(@AuthenticationPrincipal String email) {
+        UsernamePasswordAuthenticationToken auth =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder
+                        .getContext().getAuthentication();
+        Long userId = (Long) auth.getCredentials();
+        return service.getTodayLogsByUserId(userId);
+
     }
 
     @DeleteMapping("/{id}")

@@ -147,7 +147,9 @@ export default function App({userId, onLogout}) {
 
      // Recarrega missões do banco
      const response = await api.get("/player");
-     const loginResponse = response.data[0];
+     const loginResponse = response.data.find(
+        (r) => r.player.userId === userId
+     );
 
      setPlayer((prev) => ({
        ...prev,
@@ -199,7 +201,9 @@ if (!loggedIn) return <Login onLogin={() => setLoggedIn(true)} />;
     try {
       await api.post("/missions", newTask);
       const response = await api.get("/player");
-      const loginResponse = response.data[0];
+      const loginResponse = response.data.find(
+        (r) => r.player.userId === userId
+      );
       setPlayer((prev) => ({
         ...prev,
         tasks: loginResponse.todayMissions || [],

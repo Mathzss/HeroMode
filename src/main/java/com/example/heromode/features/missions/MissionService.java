@@ -125,4 +125,11 @@ public class MissionService {
         repository.deleteById(id);
     }
 
+    public List<MissionLog> getTodayLogsByUserId(Long userId){
+        Player player = playerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Player não encontrado"));
+        return logReporsitory.findByPlayerIdAndDate(player.getId(), LocalDate.now());
+
+    }
+
 }
