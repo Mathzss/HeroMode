@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const authApí = axio.create({
-    baseURL: "http://localhost:8080";
+    baseURL: import.meta.env.VITE_AUTH_URL || "http://localhost:8080";
 });
 
 export default authApi;
