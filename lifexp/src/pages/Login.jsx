@@ -1,4 +1,5 @@
 import { useState } from "react";
+import authApi from "../services/authApi";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -242,21 +243,15 @@ export default function Login({ onLogin }) {
             ? {name: fields.name, birthdate: fields.birthdate, email: fields.email, password: fields.password}
             : {email: fields.email, password: fields.password};
 
-        const res = await fetch(`http://localhost:8080${endpoint}`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body),
-        });
+        const res = await authApi.post(endpoint, body);
 
-        if(!res.ok) throw new Error ("Credenciais Inválidas");
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.token);
+        if(onLogin) onLogin(res.data.userId);
 
-        const data = await res.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.userId);
-        if(onLogin) onLogin(data.userId);
 
     } catch (err){
-        setErrors({email: err.message || "Erro ao autenticar"});
+        setErrors({email: err.response?.data?.message || err.message || "Erro ao autenticar"});
     } finally {
         setLoading(false);
     }
