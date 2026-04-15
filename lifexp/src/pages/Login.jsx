@@ -540,7 +540,10 @@ export default function Login({ onLogin }) {
           </span>
           <Flame size={11} className="text-orange-500" />
         </motion.div>
-
+        //Apenas um comentário para ver se o
+        //commit vai fazer o deploy na vercell
+        //Render também precisa funcionar, é o mais lento da parada
+        //Aiven ta rodando
       </div>
     </div>
   );
