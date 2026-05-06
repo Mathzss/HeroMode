@@ -1,6 +1,7 @@
 package com.example.heromode.features.authentication;
 
 import com.example.heromode.shared.CorsConfig;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,11 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+
+    @Bean
+    public CommandLineRunner securityCheck() {
+        return args -> System.out.println(">>> SecurityConfig CARREGADO COM SUCESSO <<<");
+    }
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
                           CorsConfigurationSource corsConfigurationSource) {
