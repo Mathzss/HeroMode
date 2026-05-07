@@ -238,7 +238,7 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try{
-        const endpoint = mode === "register" ? "/auth/register" : "/auth/login";
+        const endpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
         const body = mode === "register"
             ? {name: fields.name, birthdate: fields.birthdate, email: fields.email, password: fields.password}
             : {email: fields.email, password: fields.password};
