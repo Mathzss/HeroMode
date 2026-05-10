@@ -1,15 +1,11 @@
 package com.example.heromode.core.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// CORS is handled centrally by CorsConfig (Spring Security level).
+// Having addCorsMappings here caused 403 because Spring MVC's
+// CORS processor was overriding the security filter's CORS headers
+// and rejecting origins not in its list (e.g. heromode.com.br).
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // Porta do React do Victor
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
-    }
+public class WebConfig {
 }
