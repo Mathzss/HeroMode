@@ -8,7 +8,6 @@ import {
   Calendar,
   Eye,
   EyeOff,
-  Sword,
   Shield,
   Flame,
   Zap,
@@ -302,14 +301,19 @@ export default function Login({ onLogin }) {
           className="text-center mb-7"
         >
           <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 relative"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 relative"
             style={{
               background: "linear-gradient(135deg, rgba(6,182,212,0.15), rgba(99,102,241,0.15))",
               border: "1px solid rgba(6,182,212,0.3)",
               boxShadow: "0 0 30px rgba(6,182,212,0.12)",
             }}
           >
-            <Sword size={28} style={{ color: "#22d3ee" }} />
+            <img
+              src="/logo.png"
+              alt="HeroMode"
+              className="w-14 h-14 object-contain"
+              style={{ filter: "drop-shadow(0 0 12px rgba(34,211,238,0.5))" }}
+            />
             <div
               className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse"
               style={{ background: "#22d3ee", boxShadow: "0 0 8px rgba(34,211,238,0.8)" }}
