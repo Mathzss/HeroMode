@@ -44,6 +44,13 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/health")).permitAll()
+                        // /error MUST be permitAll. Spring Boot forwards every
+                        // uncaught exception (including those thrown by permitAll
+                        // controllers like /api/auth/register) to /error. If that
+                        // endpoint requires auth, the original error response is
+                        // replaced by 403 — masking the real problem and breaking
+                        // all POST endpoints that ever throw.
+                        .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter,
