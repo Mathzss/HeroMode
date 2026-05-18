@@ -23,4 +23,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(authRequest));
     }
 
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> google(@RequestBody GoogleAuthRequest request) {
+        return ResponseEntity.ok(authService.googleAuth(request));
+    }
+
 }

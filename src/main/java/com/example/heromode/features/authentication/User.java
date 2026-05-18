@@ -16,8 +16,12 @@ public class User {
 
     private String birthdate;
 
-    @Column(nullable = false)
+    // Password is nullable now: users that signed up via Google never have a
+    // local password — we keep the column for email/password users only.
     private String password;
+
+    @Column(unique = true)
+    private String googleId;
 
     private String role = "USER";
 
@@ -35,5 +39,7 @@ public class User {
     public void setName(String name) { this.name = name; }
     public String getBirthdate() { return birthdate; }
     public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
 
 }
