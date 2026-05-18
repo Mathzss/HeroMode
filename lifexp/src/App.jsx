@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import api from "./services/api";
-import Login from './pages/Login';
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
@@ -42,9 +41,9 @@ const achievements = [
 
 export default function App({userId, onLogout}) {
 
-  const [loggedIn, setLoggedIn] = useState(false);
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showPenalty, setShowPenalty] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -81,12 +80,21 @@ export default function App({userId, onLogout}) {
 
       } catch (err) {
         console.error("Erro ao carregar dados do herói: ", err);
+        // If the token is invalid/expired (401/403), kick the user back to login.
+        const status = err.response?.status;
+        if (status === 401 || status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            if (onLogout) onLogout();
+            return;
+        }
+        setLoadError(err.response?.data?.message || err.message || "Erro ao carregar dados do herói");
       } finally {
         setLoading(false);
       }
     }
     fetchData();
-  }, [userId]);
+  }, [userId, onLogout]);
 
   // ✅ HOOK 2 - level up (sempre declarado, mas só executa quando player existe)
   useEffect(() => {
@@ -176,15 +184,24 @@ export default function App({userId, onLogout}) {
   // ─── Returns condicionais DEPOIS de todos os hooks ───────────────────────
   if (loading)
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-cyan-500">
-        CARREGANDO...
+      <div className="min-h-screen bg-black flex items-center justify-center text-cyan-500 font-bold uppercase tracking-[0.3em]">
+        Carregando...
       </div>
     );
 
-if (!loggedIn) return <Login onLogin={() => setLoggedIn(true)} />;
-
   if (!player)
-    return <div className="text-white">Erro ao carregar Herói.</div>;
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 p-8 text-center">
+        <h2 className="text-2xl font-black text-red-400 uppercase tracking-wider">Erro ao carregar Herói</h2>
+        {loadError && <p className="text-zinc-400 text-sm max-w-md">{loadError}</p>}
+        <button
+          onClick={onLogout}
+          className="mt-4 px-6 py-2 bg-cyan-500 text-black font-bold uppercase tracking-wider rounded-lg hover:bg-cyan-400 transition"
+        >
+          Voltar ao login
+        </button>
+      </div>
+    );
 
   // ─── Variáveis derivadas DEPOIS dos hooks e dos guards ────────────────────
   const xpToNext = getXpNeeded(player.level);

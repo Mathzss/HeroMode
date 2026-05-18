@@ -245,12 +245,22 @@ export default function Login({ onLogin }) {
         const res = await authApi.post(endpoint, body);
 
         localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.token);
-        if(onLogin) onLogin(res.data.userId);
-
+        localStorage.setItem("userId", String(res.data.userId));
+        if (onLogin) onLogin(res.data.userId);
 
     } catch (err){
-        setErrors({email: err.response?.data?.message || err.message || "Erro ao autenticar"});
+        const msg = err.response?.data?.message || err.message || "Erro ao autenticar";
+        // Show the error on the most relevant field. 401/404 are credential
+        // problems; 409 is duplicate email on register; everything else is
+        // generic so we put it on the email field where the UI already shows it.
+        const status = err.response?.status;
+        if (status === 401 || status === 404) {
+            setErrors({ password: status === 404 ? "E-mail não cadastrado" : "Senha incorreta" });
+        } else if (status === 409) {
+            setErrors({ email: "Este e-mail já está cadastrado" });
+        } else {
+            setErrors({ email: msg });
+        }
     } finally {
         setLoading(false);
     }
