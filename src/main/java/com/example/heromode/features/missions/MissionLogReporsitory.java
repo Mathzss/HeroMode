@@ -11,6 +11,8 @@ public interface MissionLogReporsitory extends JpaRepository<MissionLog, Long> {
     List<MissionLog> findByPlayerIdAndDate(Long playerId, LocalDate date);
     List<MissionLog> findByPlayerIdAndDateAndCompleted(
             Long playerId, LocalDate date, Boolean completed);
+    List<MissionLog> findByPlayerIdAndCompletedAndDateBetween(
+            Long playerId, Boolean completed, LocalDate from, LocalDate to);
 
 
 }

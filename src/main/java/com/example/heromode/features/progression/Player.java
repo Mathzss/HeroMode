@@ -17,6 +17,7 @@ public class Player {
     private Integer streak = 0;
     private LocalDate lastLogin;
     private Long userId;
+    private Boolean godModeEnabled = false;
 
     // Construtor vazio obrigatorio para o JPA
     public Player() {}
@@ -42,6 +43,9 @@ public class Player {
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+
+    public Boolean getGodModeEnabled() { return godModeEnabled; }
+    public void setGodModeEnabled(Boolean godModeEnabled) { this.godModeEnabled = godModeEnabled; }
 
     // Lista de regalias/inventory pode vir depois
 }

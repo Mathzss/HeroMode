@@ -29,9 +29,15 @@ public class PlayerController {
         return repository.save(player);
     }
 
-
     @PutMapping("/{id}")
     public Player updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         return service.updatePlayer(id, player);
     }
+
+    @PatchMapping("/{id}/god-mode")
+    public Player toggleGodMode(@PathVariable Long id, @RequestBody GodModeRequest request) {
+        return service.updateGodMode(id, request.enabled());
+    }
+
+    record GodModeRequest(boolean enabled) {}
 }

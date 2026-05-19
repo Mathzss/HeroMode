@@ -63,6 +63,7 @@ export default function App({userId, onLogout}) {
             setPlayer({
                 ...data,
                 tasks: loginResponse.todayMissions || [],
+                challenges: loginResponse.todayChallenges || [],
                 inventory: data.inventory || [],
                 penalized: loginResponse.penalized,
             });
@@ -180,6 +181,73 @@ export default function App({userId, onLogout}) {
      console.error(err);
    }
  };
+
+  const toggleGodMode = async () => {
+    try {
+      const newEnabled = !player.godModeEnabled;
+      await api.patch(`/player/${player.id}/god-mode`, { enabled: newEnabled });
+
+      let newChallenges = [];
+      if (newEnabled) {
+        const res = await api.get("/challenges");
+        newChallenges = res.data;
+      }
+
+      setPlayer((prev) => ({ ...prev, godModeEnabled: newEnabled, challenges: newChallenges }));
+    } catch (err) {
+      alert("Erro ao alterar God Mode!");
+      console.error(err);
+    }
+  };
+
+  const completeChallenge = async (challenge) => {
+    try {
+      const res = await api.patch(`/challenges/${challenge.id}/complete`);
+      const xpGained = res.data;
+
+      const perks = ["Passe Livre 🍔", "Meditação 🧘", "Noite Gamer 🎮", "Cafeína Épica ☕"];
+      let newXp = player.xp + xpGained;
+      let newLevel = player.level;
+      let newStreak = player.streak + 1;
+      let newInventory = [...(player.inventory || [])];
+      let leveledUp = false;
+
+      const xpNeeded = getXpNeeded(newLevel);
+      if (newXp >= xpNeeded) {
+        newLevel = newLevel + 1;
+        newXp = newXp - xpNeeded;
+        newInventory = [...newInventory, { id: Date.now(), name: perks[Math.floor(Math.random() * perks.length)] }];
+        leveledUp = true;
+      }
+
+      await api.put(`/player/${player.id}`, {
+        id: player.id,
+        name: player.name,
+        level: newLevel,
+        xp: newXp,
+        streak: newStreak,
+      });
+
+      setPlayer((prev) => ({
+        ...prev,
+        xp: newXp,
+        level: newLevel,
+        streak: newStreak,
+        inventory: newInventory,
+        challenges: prev.challenges.filter((c) => c.id !== challenge.id),
+      }));
+
+      if (leveledUp) {
+        setTimeout(() => {
+          setShowLevelUp(true);
+          setTimeout(() => setShowLevelUp(false), 3000);
+        }, 100);
+      }
+    } catch (err) {
+      alert("Erro ao completar desafio!");
+      console.error(err);
+    }
+  };
 
   // ─── Returns condicionais DEPOIS de todos os hooks ───────────────────────
   if (loading)
@@ -317,6 +385,32 @@ export default function App({userId, onLogout}) {
               <p className="text-[9px] text-center font-bold text-zinc-600 uppercase tracking-widest">
                 Faltam {xpToNext - player.xp} XP para a próxima evolução
               </p>
+            </div>
+          </section>
+
+          <section className="bg-zinc-900/20 backdrop-blur-sm p-6 rounded-[2rem] border border-white/5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skull size={20} className={player.godModeEnabled ? "text-amber-400" : "text-zinc-600"} />
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-white/60">God Mode</h3>
+                  <p className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">Gerador de Desafios</p>
+                </div>
+              </div>
+              <button
+                onClick={toggleGodMode}
+                className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
+                  player.godModeEnabled
+                    ? "bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.35)]"
+                    : "bg-zinc-800"
+                }`}
+              >
+                <div
+                  className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${
+                    player.godModeEnabled ? "left-7" : "left-1"
+                  }`}
+                />
+              </button>
             </div>
           </section>
 
@@ -458,6 +552,63 @@ export default function App({userId, onLogout}) {
               ))}
             </AnimatePresence>
           </div>
+
+          {player.godModeEnabled && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center px-4">
+                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-amber-500/80 flex items-center gap-3">
+                  <Skull size={20} /> Desafios God Mode
+                </h2>
+                <span className="text-[10px] font-black text-amber-400 italic bg-amber-500/10 px-3 py-1 rounded-full">
+                  +200 XP Bônus
+                </span>
+              </div>
+              <AnimatePresence mode="popLayout">
+                {player.challenges?.length === 0 ? (
+                  <p className="text-center py-8 text-xs font-bold text-zinc-600 italic uppercase tracking-widest">
+                    Todos os desafios de hoje foram concluídos. Volte amanhã!
+                  </p>
+                ) : (
+                  player.challenges?.map((challenge) => (
+                    <motion.div
+                      key={challenge.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ scale: 0.9, opacity: 0 }}
+                      className="group bg-amber-950/20 hover:bg-amber-900/30 border border-amber-500/20 p-6 rounded-[2rem] flex items-center justify-between transition-all"
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover:border-amber-500/50 transition-colors">
+                          {categoryIcons[challenge.category] ?? <Zap size={20} />}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold tracking-tight text-white/90">{challenge.title}</h4>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+                              {challenge.category}
+                            </span>
+                            <span className="text-[9px] font-black px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
+                              God Mode
+                            </span>
+                            <span className="text-[10px] font-black text-amber-400 italic">
+                              +{challenge.xpBonus} XP
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => completeChallenge(challenge)}
+                        className="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center hover:bg-amber-500 hover:text-black transition-all shadow-lg"
+                      >
+                        <ShieldCheck size={28} />
+                      </button>
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
           <section className="bg-zinc-900/20 p-8 rounded-[2.5rem] border border-white/5">
             <h3 className="text-xs font-black uppercase tracking-widest mb-6 text-pink-500 flex items-center gap-3">
