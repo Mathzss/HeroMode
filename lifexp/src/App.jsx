@@ -21,25 +21,28 @@ import {
 
 const getXpNeeded = (lvl) => Math.floor(100 * Math.pow(lvl, 1.5));
 
+const _px = (seed, bg) =>
+  `https://api.dicebear.com/9.x/pixel-art/svg?seed=${seed}&backgroundColor=${bg}&radius=50`;
+
 const AVATARS = [
   // Guerreiros masculinos
-  { id: "rocky",       name: "Rocky",           desc: "Italian Stallion",  url: "https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Rocky_balboa.jpeg/250px-Rocky_balboa.jpeg" },
-  { id: "terminator",  name: "Exterminador",    desc: "I'll be back",      url: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Terminator-2-judgement-day.jpg/250px-Terminator-2-judgement-day.jpg" },
-  { id: "rambo",       name: "Rambo",           desc: "First Blood",       url: "https://upload.wikimedia.org/wikipedia/en/d/d6/First_blood_poster.jpg" },
-  { id: "leonidas",    name: "Leônidas",        desc: "This is Sparta!",   url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Gerard_Butler_%2829681162176%29.jpg/120px-Gerard_Butler_%2829681162176%29.jpg" },
-  { id: "johnwick",    name: "John Wick",       desc: "The Boogeyman",     url: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9f/John_Wick_Keanu.jpeg/250px-John_Wick_Keanu.jpeg" },
-  { id: "conan",       name: "Conan",           desc: "The Barbarian",     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Arnold_Schwarzenegger_2025_%28cropped%29.jpg/250px-Arnold_Schwarzenegger_2025_%28cropped%29.jpg" },
-  { id: "madmax",      name: "Mad Max",         desc: "Fury Road",         url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Tom_Hardy_by_Gage_Skidmore_in_2018.jpg/250px-Tom_Hardy_by_Gage_Skidmore_in_2018.jpg" },
-  { id: "bond",        name: "James Bond",      desc: "007",               url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Daniel_Craig_James_Bond_at_Madame_Tussauds_wax_figure.jpg/250px-Daniel_Craig_James_Bond_at_Madame_Tussauds_wax_figure.jpg" },
+  { id: "rocky",       name: "Rocky",           desc: "Italian Stallion",  url: _px("RockyBalboa-fighter-1976",    "1e3a5f") },
+  { id: "terminator",  name: "Exterminador",    desc: "I'll be back",      url: _px("T800-Terminator-machine",     "0d0d1a") },
+  { id: "rambo",       name: "Rambo",           desc: "First Blood",       url: _px("Rambo-John-firstblood",       "3b1a1a") },
+  { id: "leonidas",    name: "Leônidas",        desc: "This is Sparta!",   url: _px("Leonidas-Sparta-warrior300",  "3d2b00") },
+  { id: "johnwick",    name: "John Wick",       desc: "The Boogeyman",     url: _px("JohnWick-BabaYaga-assassin",  "0a1628") },
+  { id: "conan",       name: "Conan",           desc: "The Barbarian",     url: _px("Conan-Barbarian-Arnold",      "2b1d0e") },
+  { id: "madmax",      name: "Mad Max",         desc: "Fury Road",         url: _px("MadMax-Rockatansky-road",     "1f1a0a") },
+  { id: "bond",        name: "James Bond",      desc: "007",               url: _px("JamesBond-007-MI6-spy",       "0a1a2e") },
   // Guerreiras femininas
-  { id: "wonderwoman", name: "Mulher Maravilha", desc: "Diana Prince",     url: "https://upload.wikimedia.org/wikipedia/en/3/34/Dianaprince.PNG" },
-  { id: "ripley",      name: "Ripley",           desc: "Alien",            url: "https://upload.wikimedia.org/wikipedia/en/1/17/Ellen_ripley.jpg" },
-  { id: "sarahconnor", name: "Sarah Connor",     desc: "No Fate",          url: "https://upload.wikimedia.org/wikipedia/en/8/81/Sarah_Connor_%28Linda_Hamilton%29.jpg" },
-  { id: "blackwidow",  name: "Viúva Negra",      desc: "Natasha",          url: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Scarlett_Johansson_as_Black_Widow.jpg/250px-Scarlett_Johansson_as_Black_Widow.jpg" },
-  { id: "furiosa",     name: "Furiosa",          desc: "Fury Road",        url: "https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Mad_Max_Fury_Road.jpg/250px-Mad_Max_Fury_Road.jpg" },
-  { id: "laracroft",   name: "Lara Croft",       desc: "Tomb Raider",      url: "https://upload.wikimedia.org/wikipedia/en/a/a8/LaraCroftInfobox.png" },
-  { id: "katniss",     name: "Katniss",          desc: "The Mockingjay",   url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Katniss_Everdeen_%28Jennifer_Lawrence%29_figure_at_Madame_Tussauds_London_%2831139647115%29.jpg/250px-Katniss_Everdeen_%28Jennifer_Lawrence%29_figure_at_Madame_Tussauds_London_%2831139647115%29.jpg" },
-  { id: "xena",        name: "Xena",             desc: "Warrior Princess", url: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Returnofcallisto_02.jpg/250px-Returnofcallisto_02.jpg" },
+  { id: "wonderwoman", name: "Mulher Maravilha", desc: "Diana Prince",     url: _px("WonderWoman-Diana-amazon",    "1a0a3e") },
+  { id: "ripley",      name: "Ripley",           desc: "Alien",            url: _px("EllenRipley-Alien-Nostromo",  "0a1f1a") },
+  { id: "sarahconnor", name: "Sarah Connor",     desc: "No Fate",          url: _px("SarahConnor-T2-resistance",   "1a2e0a") },
+  { id: "blackwidow",  name: "Viúva Negra",      desc: "Natasha",          url: _px("BlackWidow-Natasha-Avenger",  "1a0010") },
+  { id: "furiosa",     name: "Furiosa",          desc: "Fury Road",        url: _px("Furiosa-Imperator-FuryRoad",  "2e1a00") },
+  { id: "laracroft",   name: "Lara Croft",       desc: "Tomb Raider",      url: _px("LaraCroft-TombRaider-archer", "0a1e2e") },
+  { id: "katniss",     name: "Katniss",          desc: "The Mockingjay",   url: _px("Katniss-Everdeen-Mockingjay", "162e0a") },
+  { id: "xena",        name: "Xena",             desc: "Warrior Princess", url: _px("Xena-WarriorPrincess-chakram","2e0a1a") },
 ];
 
 const getAvatarUrl = (avatarId) =>
