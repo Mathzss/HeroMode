@@ -23,23 +23,23 @@ const getXpNeeded = (lvl) => Math.floor(100 * Math.pow(lvl, 1.5));
 
 const AVATARS = [
   // Guerreiros masculinos
-  { id: "rocky",       name: "Rocky",           desc: "Italian Stallion",  url: "https://api.dicebear.com/9.x/adventurer/svg?seed=rocky1976stallone&backgroundColor=1e3a5f" },
-  { id: "terminator",  name: "Exterminador",    desc: "I'll be back",      url: "https://api.dicebear.com/9.x/adventurer/svg?seed=t800terminator84&backgroundColor=1a1a2e" },
-  { id: "rambo",       name: "Rambo",           desc: "First Blood",       url: "https://api.dicebear.com/9.x/adventurer/svg?seed=rambo-firstblood82&backgroundColor=2d1b1b" },
-  { id: "leonidas",    name: "Leônidas",        desc: "This is Sparta!",   url: "https://api.dicebear.com/9.x/adventurer/svg?seed=leonidas300sparta&backgroundColor=3d2b00" },
-  { id: "johnwick",    name: "John Wick",       desc: "The Boogeyman",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=johnwick-baba-yaga&backgroundColor=0d1b2a" },
-  { id: "conan",       name: "Conan",           desc: "The Barbarian",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=conan-barbarian82&backgroundColor=2b1d0e" },
-  { id: "madmax",      name: "Mad Max",         desc: "Fury Road",         url: "https://api.dicebear.com/9.x/adventurer/svg?seed=mad-max-rockatansky&backgroundColor=1f1a0f" },
-  { id: "bond",        name: "James Bond",      desc: "007",               url: "https://api.dicebear.com/9.x/adventurer/svg?seed=james-bond-mi6-007&backgroundColor=0a1628" },
+  { id: "rocky",       name: "Rocky",           desc: "Italian Stallion",  url: "https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Rocky_balboa.jpeg/250px-Rocky_balboa.jpeg" },
+  { id: "terminator",  name: "Exterminador",    desc: "I'll be back",      url: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Terminator-2-judgement-day.jpg/250px-Terminator-2-judgement-day.jpg" },
+  { id: "rambo",       name: "Rambo",           desc: "First Blood",       url: "https://upload.wikimedia.org/wikipedia/en/thumb/6/60/Rambo_First_Blood_poster.jpg/250px-Rambo_First_Blood_poster.jpg" },
+  { id: "leonidas",    name: "Leônidas",        desc: "This is Sparta!",   url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Gerard_Butler_%2829681162176%29.jpg/120px-Gerard_Butler_%2829681162176%29.jpg" },
+  { id: "johnwick",    name: "John Wick",       desc: "The Boogeyman",     url: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9f/John_Wick_Keanu.jpeg/250px-John_Wick_Keanu.jpeg" },
+  { id: "conan",       name: "Conan",           desc: "The Barbarian",     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Arnold_Schwarzenegger_by_Gage_Skidmore_9.jpg/200px-Arnold_Schwarzenegger_by_Gage_Skidmore_9.jpg" },
+  { id: "madmax",      name: "Mad Max",         desc: "Fury Road",         url: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Tom_Hardy_by_Gage_Skidmore.jpg/200px-Tom_Hardy_by_Gage_Skidmore.jpg" },
+  { id: "bond",        name: "James Bond",      desc: "007",               url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Daniel_Craig_James_Bond_at_Madame_Tussauds_wax_figure.jpg/250px-Daniel_Craig_James_Bond_at_Madame_Tussauds_wax_figure.jpg" },
   // Guerreiras femininas
-  { id: "wonderwoman", name: "Mulher Maravilha", desc: "Diana Prince",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=wonder-woman-diana&backgroundColor=1a0a2e" },
-  { id: "ripley",      name: "Ripley",           desc: "Alien",            url: "https://api.dicebear.com/9.x/adventurer/svg?seed=ripley-alien-1979&backgroundColor=0a1f1f" },
-  { id: "sarahconnor", name: "Sarah Connor",     desc: "No Fate",          url: "https://api.dicebear.com/9.x/adventurer/svg?seed=sarah-connor-t2&backgroundColor=1f2d0a" },
-  { id: "blackwidow",  name: "Viúva Negra",      desc: "Natasha",          url: "https://api.dicebear.com/9.x/adventurer/svg?seed=black-widow-natasha&backgroundColor=1a0000" },
-  { id: "furiosa",     name: "Furiosa",          desc: "Fury Road",        url: "https://api.dicebear.com/9.x/adventurer/svg?seed=imperator-furiosa-war&backgroundColor=261a00" },
-  { id: "laracroft",   name: "Lara Croft",       desc: "Tomb Raider",      url: "https://api.dicebear.com/9.x/adventurer/svg?seed=lara-croft-raider&backgroundColor=0a1a2e" },
-  { id: "katniss",     name: "Katniss",          desc: "The Mockingjay",   url: "https://api.dicebear.com/9.x/adventurer/svg?seed=katniss-everdeen-panem&backgroundColor=1a2e0a" },
-  { id: "xena",        name: "Xena",             desc: "Warrior Princess", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=xena-warrior-princess&backgroundColor=2e0a1a" },
+  { id: "wonderwoman", name: "Mulher Maravilha", desc: "Diana Prince",     url: "https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Wonder_Woman_750.jpg/250px-Wonder_Woman_750.jpg" },
+  { id: "ripley",      name: "Ripley",           desc: "Alien",            url: "https://upload.wikimedia.org/wikipedia/en/1/17/Ellen_ripley.jpg" },
+  { id: "sarahconnor", name: "Sarah Connor",     desc: "No Fate",          url: "https://upload.wikimedia.org/wikipedia/en/8/81/Sarah_Connor_%28Linda_Hamilton%29.jpg" },
+  { id: "blackwidow",  name: "Viúva Negra",      desc: "Natasha",          url: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Scarlett_Johansson_as_Black_Widow.jpg/250px-Scarlett_Johansson_as_Black_Widow.jpg" },
+  { id: "furiosa",     name: "Furiosa",          desc: "Fury Road",        url: "https://upload.wikimedia.org/wikipedia/en/0/03/Furiosa_2015.jpg" },
+  { id: "laracroft",   name: "Lara Croft",       desc: "Tomb Raider",      url: "https://upload.wikimedia.org/wikipedia/en/a/a8/LaraCroftInfobox.png" },
+  { id: "katniss",     name: "Katniss",          desc: "The Mockingjay",   url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Katniss_Everdeen_%28Jennifer_Lawrence%29_figure_at_Madame_Tussauds_London_%2831139647115%29.jpg/250px-Katniss_Everdeen_%28Jennifer_Lawrence%29_figure_at_Madame_Tussauds_London_%2831139647115%29.jpg" },
+  { id: "xena",        name: "Xena",             desc: "Warrior Princess", url: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Returnofcallisto_02.jpg/250px-Returnofcallisto_02.jpg" },
 ];
 
 const getAvatarUrl = (avatarId) =>
@@ -377,11 +377,11 @@ export default function App({userId, onLogout}) {
                         : "border-white/5 bg-black/20 hover:border-white/20"
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800">
                       <img
                         src={avatar.url}
                         alt={avatar.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-top"
                         loading="lazy"
                       />
                     </div>
@@ -434,11 +434,11 @@ export default function App({userId, onLogout}) {
                 onClick={() => setShowAvatarPicker(true)}
                 className="relative flex-shrink-0 group/avatar"
               >
-                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.2)] group-hover/avatar:border-cyan-500/80 transition-all">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.2)] group-hover/avatar:border-cyan-500/80 transition-all bg-zinc-800">
                   <img
                     src={getAvatarUrl(player.avatarId)}
                     alt="avatar"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                     loading="lazy"
                   />
                 </div>
