@@ -185,7 +185,7 @@ export default function App({userId, onLogout}) {
   const toggleGodMode = async () => {
     try {
       const newEnabled = !player.godModeEnabled;
-      await api.patch(`/player/${player.id}/god-mode?enabled=${newEnabled}`);
+      await api.patch(`/player/${player.id}/god-mode/${newEnabled}`);
 
       let newChallenges = [];
       if (newEnabled) {
