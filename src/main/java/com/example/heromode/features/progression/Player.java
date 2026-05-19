@@ -17,6 +17,8 @@ public class Player {
     private Integer streak = 0;
     private LocalDate lastLogin;
     private Long userId;
+
+    @Column(name = "god_mode_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean godModeEnabled = false;
 
     // Construtor vazio obrigatorio para o JPA

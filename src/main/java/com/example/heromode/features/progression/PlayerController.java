@@ -35,9 +35,7 @@ public class PlayerController {
     }
 
     @PatchMapping("/{id}/god-mode")
-    public Player toggleGodMode(@PathVariable Long id, @RequestBody GodModeRequest request) {
-        return service.updateGodMode(id, request.enabled());
+    public Player toggleGodMode(@PathVariable Long id, @RequestParam boolean enabled) {
+        return service.updateGodMode(id, enabled);
     }
-
-    record GodModeRequest(boolean enabled) {}
 }

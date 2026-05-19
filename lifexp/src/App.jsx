@@ -185,7 +185,7 @@ export default function App({userId, onLogout}) {
   const toggleGodMode = async () => {
     try {
       const newEnabled = !player.godModeEnabled;
-      await api.patch(`/player/${player.id}/god-mode`, { enabled: newEnabled });
+      await api.patch(`/player/${player.id}/god-mode?enabled=${newEnabled}`);
 
       let newChallenges = [];
       if (newEnabled) {
@@ -513,40 +513,38 @@ export default function App({userId, onLogout}) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  className="group bg-zinc-900/40 hover:bg-zinc-800/60 border border-white/5 p-6 rounded-[2rem] flex items-center justify-between transition-all"
+                  className="group bg-zinc-900/40 hover:bg-zinc-800/60 border border-white/5 p-4 sm:p-6 rounded-[2rem] flex items-center gap-3 sm:gap-6 transition-all"
                 >
-                  <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 bg-black/60 rounded-2xl flex items-center justify-center text-cyan-400 border border-white/5 group-hover:border-cyan-500/50 transition-colors">
-                      {categoryIcons[task.mission.category]}
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold tracking-tight text-white/90">{task.mission.title}</h4>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                          {task.mission.category}
-                        </span>
-                        <span
-                          className={`text-[9px] font-black px-3 py-0.5 rounded-full ${
-                            task.mission.difficulty === "Hard"
-                              ? "bg-red-500/20 text-red-500"
-                              : task.mission.difficulty === "Medium"
-                              ? "bg-yellow-500/20 text-yellow-500"
-                              : "bg-green-500/20 text-green-500"
-                          }`}
-                        >
-                          {task.mission.difficulty}
-                        </span>
-                        <span className="text-[10px] font-black text-cyan-400 italic">
-                          +{task.mission.xpValue} XP
-                        </span>
-                      </div>
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-black/60 rounded-2xl flex items-center justify-center text-cyan-400 border border-white/5 group-hover:border-cyan-500/50 transition-colors">
+                    {categoryIcons[task.mission.category]}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-base sm:text-lg font-bold tracking-tight text-white/90 leading-snug">{task.mission.title}</h4>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+                        {task.mission.category}
+                      </span>
+                      <span
+                        className={`text-[9px] font-black px-2 py-0.5 rounded-full ${
+                          task.mission.difficulty === "Hard"
+                            ? "bg-red-500/20 text-red-500"
+                            : task.mission.difficulty === "Medium"
+                            ? "bg-yellow-500/20 text-yellow-500"
+                            : "bg-green-500/20 text-green-500"
+                        }`}
+                      >
+                        {task.mission.difficulty}
+                      </span>
+                      <span className="text-[10px] font-black text-cyan-400 italic">
+                        +{task.mission.xpValue} XP
+                      </span>
                     </div>
                   </div>
                   <button
                     onClick={() => completeTask(task)}
-                    className="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-lg"
+                    className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-lg"
                   >
-                    <ShieldCheck size={28} />
+                    <ShieldCheck size={24} />
                   </button>
                 </motion.div>
               ))}
@@ -576,32 +574,30 @@ export default function App({userId, onLogout}) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ scale: 0.9, opacity: 0 }}
-                      className="group bg-amber-950/20 hover:bg-amber-900/30 border border-amber-500/20 p-6 rounded-[2rem] flex items-center justify-between transition-all"
+                      className="group bg-amber-950/20 hover:bg-amber-900/30 border border-amber-500/20 p-4 sm:p-6 rounded-[2rem] flex items-center gap-3 sm:gap-6 transition-all"
                     >
-                      <div className="flex items-center gap-6">
-                        <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover:border-amber-500/50 transition-colors">
-                          {categoryIcons[challenge.category] ?? <Zap size={20} />}
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-bold tracking-tight text-white/90">{challenge.title}</h4>
-                          <div className="flex items-center gap-3 mt-2">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                              {challenge.category}
-                            </span>
-                            <span className="text-[9px] font-black px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
-                              God Mode
-                            </span>
-                            <span className="text-[10px] font-black text-amber-400 italic">
-                              +{challenge.xpBonus} XP
-                            </span>
-                          </div>
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover:border-amber-500/50 transition-colors">
+                        {categoryIcons[challenge.category] ?? <Zap size={20} />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-base sm:text-lg font-bold tracking-tight text-white/90 leading-snug">{challenge.title}</h4>
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+                            {challenge.category}
+                          </span>
+                          <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
+                            God Mode
+                          </span>
+                          <span className="text-[10px] font-black text-amber-400 italic">
+                            +{challenge.xpBonus} XP
+                          </span>
                         </div>
                       </div>
                       <button
                         onClick={() => completeChallenge(challenge)}
-                        className="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center hover:bg-amber-500 hover:text-black transition-all shadow-lg"
+                        className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center hover:bg-amber-500 hover:text-black transition-all shadow-lg"
                       >
-                        <ShieldCheck size={28} />
+                        <ShieldCheck size={24} />
                       </button>
                     </motion.div>
                   ))
