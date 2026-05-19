@@ -22,7 +22,7 @@ import {
 const getXpNeeded = (lvl) => Math.floor(100 * Math.pow(lvl, 1.5));
 
 const _px = (seed, bg) =>
-  `https://api.dicebear.com/9.x/pixel-art/svg?seed=${seed}&backgroundColor=${bg}&radius=50`;
+  `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}&backgroundColor=${bg}&radius=50`;
 
 const AVATARS = [
   // Guerreiros masculinos
