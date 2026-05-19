@@ -15,9 +15,10 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
+        config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
                 "https://hero-mode.vercel.app",
+                "https://*.vercel.app",
                 "https://heromode.com.br",
                 "https://www.heromode.com.br"
         ));
