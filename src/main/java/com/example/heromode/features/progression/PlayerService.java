@@ -56,6 +56,9 @@ public class PlayerService {
         player.setLevel(updated.getLevel());
         player.setStreak(updated.getStreak());
         player.setName(updated.getName());
+        if (updated.getAvatarId() != null) {
+            player.setAvatarId(updated.getAvatarId());
+        }
         return repository.save(player);
     }
 

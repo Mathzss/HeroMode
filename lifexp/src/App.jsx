@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "./services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -7,9 +7,7 @@ import {
   Zap,
   Brain,
   Dumbbell,
-  Plus,
   ShieldCheck,
-  Clock,
   Gift,
   Skull,
   Edit3,
@@ -22,6 +20,30 @@ import {
 } from "lucide-react";
 
 const getXpNeeded = (lvl) => Math.floor(100 * Math.pow(lvl, 1.5));
+
+const AVATARS = [
+  // Guerreiros masculinos
+  { id: "rocky",       name: "Rocky",           desc: "Italian Stallion",  url: "https://api.dicebear.com/9.x/adventurer/svg?seed=rocky1976stallone&backgroundColor=1e3a5f" },
+  { id: "terminator",  name: "Exterminador",    desc: "I'll be back",      url: "https://api.dicebear.com/9.x/adventurer/svg?seed=t800terminator84&backgroundColor=1a1a2e" },
+  { id: "rambo",       name: "Rambo",           desc: "First Blood",       url: "https://api.dicebear.com/9.x/adventurer/svg?seed=rambo-firstblood82&backgroundColor=2d1b1b" },
+  { id: "leonidas",    name: "Leônidas",        desc: "This is Sparta!",   url: "https://api.dicebear.com/9.x/adventurer/svg?seed=leonidas300sparta&backgroundColor=3d2b00" },
+  { id: "johnwick",    name: "John Wick",       desc: "The Boogeyman",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=johnwick-baba-yaga&backgroundColor=0d1b2a" },
+  { id: "conan",       name: "Conan",           desc: "The Barbarian",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=conan-barbarian82&backgroundColor=2b1d0e" },
+  { id: "madmax",      name: "Mad Max",         desc: "Fury Road",         url: "https://api.dicebear.com/9.x/adventurer/svg?seed=mad-max-rockatansky&backgroundColor=1f1a0f" },
+  { id: "bond",        name: "James Bond",      desc: "007",               url: "https://api.dicebear.com/9.x/adventurer/svg?seed=james-bond-mi6-007&backgroundColor=0a1628" },
+  // Guerreiras femininas
+  { id: "wonderwoman", name: "Mulher Maravilha", desc: "Diana Prince",     url: "https://api.dicebear.com/9.x/adventurer/svg?seed=wonder-woman-diana&backgroundColor=1a0a2e" },
+  { id: "ripley",      name: "Ripley",           desc: "Alien",            url: "https://api.dicebear.com/9.x/adventurer/svg?seed=ripley-alien-1979&backgroundColor=0a1f1f" },
+  { id: "sarahconnor", name: "Sarah Connor",     desc: "No Fate",          url: "https://api.dicebear.com/9.x/adventurer/svg?seed=sarah-connor-t2&backgroundColor=1f2d0a" },
+  { id: "blackwidow",  name: "Viúva Negra",      desc: "Natasha",          url: "https://api.dicebear.com/9.x/adventurer/svg?seed=black-widow-natasha&backgroundColor=1a0000" },
+  { id: "furiosa",     name: "Furiosa",          desc: "Fury Road",        url: "https://api.dicebear.com/9.x/adventurer/svg?seed=imperator-furiosa-war&backgroundColor=261a00" },
+  { id: "laracroft",   name: "Lara Croft",       desc: "Tomb Raider",      url: "https://api.dicebear.com/9.x/adventurer/svg?seed=lara-croft-raider&backgroundColor=0a1a2e" },
+  { id: "katniss",     name: "Katniss",          desc: "The Mockingjay",   url: "https://api.dicebear.com/9.x/adventurer/svg?seed=katniss-everdeen-panem&backgroundColor=1a2e0a" },
+  { id: "xena",        name: "Xena",             desc: "Warrior Princess", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=xena-warrior-princess&backgroundColor=2e0a1a" },
+];
+
+const getAvatarUrl = (avatarId) =>
+  AVATARS.find((a) => a.id === avatarId)?.url ?? AVATARS[0].url;
 
 const categoryIcons = {
   Estudo: <Brain size={20} />,
@@ -45,8 +67,8 @@ export default function App({userId, onLogout}) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [showPenalty, setShowPenalty] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   // ✅ HOOK 1 - fetch inicial
   useEffect(() => {
@@ -145,13 +167,13 @@ export default function App({userId, onLogout}) {
        leveledUp = true;
      }
 
-     // Salva no banco só os campos que o Player.java conhece
      await api.put(`/player/${player.id}`, {
        id: player.id,
        name: player.name,
        level: newLevel,
        xp: newXp,
        streak: newStreak,
+       avatarId: player.avatarId,
      });
 
      // Recarrega missões do banco
@@ -181,6 +203,24 @@ export default function App({userId, onLogout}) {
      console.error(err);
    }
  };
+
+  const selectAvatar = async (avatarId) => {
+    try {
+      await api.put(`/player/${player.id}`, {
+        id: player.id,
+        name: player.name,
+        level: player.level,
+        xp: player.xp,
+        streak: player.streak,
+        avatarId,
+      });
+      setPlayer((prev) => ({ ...prev, avatarId }));
+      setShowAvatarPicker(false);
+    } catch (err) {
+      alert("Erro ao salvar avatar!");
+      console.error(err);
+    }
+  };
 
   const toggleGodMode = async () => {
     const newEnabled = !player.godModeEnabled;
@@ -230,6 +270,7 @@ export default function App({userId, onLogout}) {
         level: newLevel,
         xp: newXp,
         streak: newStreak,
+        avatarId: player.avatarId,
       });
 
       setPlayer((prev) => ({
@@ -305,6 +346,59 @@ export default function App({userId, onLogout}) {
 
   return (
     <div className="min-h-screen bg-[#050505] bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/20 via-black to-black text-zinc-100 p-4 md:p-10 font-sans">
+      {/* ─── Avatar picker modal ─── */}
+      <AnimatePresence>
+        {showAvatarPicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowAvatarPicker(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-zinc-900 border border-white/10 rounded-3xl p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xs font-black uppercase tracking-widest text-white/50 mb-5 flex items-center gap-2">
+                <Crown size={16} className="text-yellow-500" /> Escolha seu Avatar
+              </h3>
+              <div className="grid grid-cols-4 gap-3">
+                {AVATARS.map((avatar) => (
+                  <button
+                    key={avatar.id}
+                    onClick={() => selectAvatar(avatar.id)}
+                    className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl border transition-all ${
+                      player.avatarId === avatar.id
+                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_12px_rgba(6,182,212,0.2)]"
+                        : "border-white/5 bg-black/20 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                      <img
+                        src={avatar.url}
+                        alt={avatar.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <span className="text-[8px] font-black uppercase tracking-wide text-zinc-400 text-center leading-tight line-clamp-1">
+                      {avatar.name}
+                    </span>
+                    <span className="text-[7px] text-zinc-600 text-center leading-none italic hidden sm:block">
+                      {avatar.desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showLevelUp && (
           <motion.div
@@ -334,16 +428,31 @@ export default function App({userId, onLogout}) {
         <aside className="lg:col-span-4 space-y-8">
           <section className="bg-zinc-900/40 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl" />
-            <div className="flex items-center gap-6 mb-8">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-tr from-cyan-500 to-indigo-600 rounded-3xl flex items-center justify-center text-3xl font-black italic shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+            <div className="flex items-center gap-5 mb-8">
+              {/* Avatar clicável */}
+              <button
+                onClick={() => setShowAvatarPicker(true)}
+                className="relative flex-shrink-0 group/avatar"
+              >
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.2)] group-hover/avatar:border-cyan-500/80 transition-all">
+                  <img
+                    src={getAvatarUrl(player.avatarId)}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                {/* Level badge */}
+                <div className="absolute -bottom-1.5 -right-1.5 min-w-[28px] h-7 px-1.5 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-lg flex items-center justify-center text-xs font-black shadow-lg border-2 border-black">
                   {player.level}
                 </div>
-                <div className="absolute -bottom-2 -right-2 bg-black border border-white/10 p-1.5 rounded-lg">
-                  <Flame className="text-orange-500" size={16} />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
+                  <Edit3 size={14} className="text-white" />
                 </div>
-              </div>
-              <div>
+              </button>
+
+              <div className="min-w-0">
                 {isEditingName ? (
                   <input
                     autoFocus
@@ -357,14 +466,17 @@ export default function App({userId, onLogout}) {
                 ) : (
                   <h1
                     onClick={() => setIsEditingName(true)}
-                    className="text-2xl font-black tracking-tight cursor-pointer hover:text-cyan-400 transition-colors flex items-center gap-2"
+                    className="text-xl font-black tracking-tight cursor-pointer hover:text-cyan-400 transition-colors flex items-center gap-2 truncate"
                   >
-                    {player.name} <Edit3 size={16} className="text-white/20" />
+                    {player.name} <Edit3 size={14} className="text-white/20 flex-shrink-0" />
                   </h1>
                 )}
                 <p className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em] mt-1">
                   Status: Online
                 </p>
+                <div className="flex items-center gap-1.5 mt-1 text-[10px] font-black text-orange-500/80">
+                  <Flame size={11} /> {player.streak} dias de streak
+                </div>
               </div>
             </div>
             <button
@@ -501,13 +613,10 @@ export default function App({userId, onLogout}) {
           </section>
 
           <div className="space-y-4">
-            <div className="flex justify-between items-center px-4">
+            <div className="px-4">
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white/30 flex items-center gap-3">
                 <Sword size={20} /> Missões Ativas
               </h2>
-              <div className="flex items-center gap-2 text-[10px] font-black text-orange-500 italic bg-orange-500/10 px-3 py-1 rounded-full">
-                <Flame size={14} /> Streak: {player.streak} Dias
-              </div>
             </div>
             <AnimatePresence mode="popLayout">
               {player.tasks?.map((task) => (

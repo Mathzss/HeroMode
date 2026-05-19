@@ -21,6 +21,8 @@ public class Player {
     @Column(name = "god_mode_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean godModeEnabled = false;
 
+    private String avatarId;
+
     // Construtor vazio obrigatorio para o JPA
     public Player() {}
 
@@ -48,6 +50,9 @@ public class Player {
 
     public Boolean getGodModeEnabled() { return godModeEnabled; }
     public void setGodModeEnabled(Boolean godModeEnabled) { this.godModeEnabled = godModeEnabled; }
+
+    public String getAvatarId() { return avatarId; }
+    public void setAvatarId(String avatarId) { this.avatarId = avatarId; }
 
     // Lista de regalias/inventory pode vir depois
 }
