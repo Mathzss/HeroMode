@@ -183,20 +183,24 @@ export default function App({userId, onLogout}) {
  };
 
   const toggleGodMode = async () => {
+    const newEnabled = !player.godModeEnabled;
     try {
-      const newEnabled = !player.godModeEnabled;
       await api.patch(`/player/${player.id}/god-mode/${newEnabled}`);
-
-      let newChallenges = [];
-      if (newEnabled) {
-        const res = await api.get("/challenges");
-        newChallenges = res.data;
-      }
-
-      setPlayer((prev) => ({ ...prev, godModeEnabled: newEnabled, challenges: newChallenges }));
     } catch (err) {
-      alert("Erro ao alterar God Mode!");
-      console.error(err);
+      console.error("[god-mode PATCH error]", err.response?.data || err.message);
+      alert(`Erro ao salvar God Mode: ${err.response?.data?.message || err.message}`);
+      return;
+    }
+
+    setPlayer((prev) => ({ ...prev, godModeEnabled: newEnabled, challenges: [] }));
+
+    if (newEnabled) {
+      try {
+        const res = await api.get("/challenges");
+        setPlayer((prev) => ({ ...prev, challenges: res.data || [] }));
+      } catch (err) {
+        console.error("[god-mode GET /challenges error]", err.response?.data || err.message);
+      }
     }
   };
 

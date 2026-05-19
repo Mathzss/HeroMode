@@ -1,5 +1,7 @@
 package com.example.heromode.features.progression;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -7,6 +9,8 @@ import java.util.List;
 @RequestMapping("/api/player")
 //@CrossOrigin(origins = "*")
 public class PlayerController {
+
+    private static final Logger log = LoggerFactory.getLogger(PlayerController.class);
 
     private final PlayerRepository repository;
     private final PlayerService service;
@@ -36,6 +40,11 @@ public class PlayerController {
 
     @PatchMapping("/{id}/god-mode/{enabled}")
     public Player toggleGodMode(@PathVariable Long id, @PathVariable boolean enabled) {
-        return service.updateGodMode(id, enabled);
+        try {
+            return service.updateGodMode(id, enabled);
+        } catch (Exception e) {
+            log.error("Erro ao atualizar god-mode para player {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
     }
 }

@@ -38,8 +38,12 @@ public class PlayerService {
 
         List<Challenge> todayChallenges = List.of();
         if (Boolean.TRUE.equals(player.getGodModeEnabled())) {
-            challengeService.generateDailyChallenges(player);
-            todayChallenges = challengeService.getTodayChallenges(player.getId());
+            try {
+                challengeService.generateDailyChallenges(player);
+                todayChallenges = challengeService.getTodayChallenges(player.getId());
+            } catch (Exception e) {
+                // Não deixa falha de challenges quebrar o login
+            }
         }
 
         return new PlayerLoginResponse(player, todayLogs, penalized, todayChallenges);
